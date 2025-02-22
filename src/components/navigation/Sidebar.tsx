@@ -122,7 +122,7 @@ const Sidebar = () => {
       <PageList>
         {sidebarWikiPages.map((page) => (
           <li key={page.id}>
-            <PageLink to={`/campaigns/${campaignId}/wiki/${page.id}`}>
+            <PageLink to={`/campaigns/${campaignId}/wiki/${page.urlId}`}>
               {page.title}
             </PageLink>
           </li>

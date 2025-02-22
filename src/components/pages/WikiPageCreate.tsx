@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import styled from "@emotion/styled";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
 import { db, collections } from "../../services/firebase";
 
 const FormContainer = styled.div`
@@ -102,6 +102,13 @@ const WikiPageCreate = () => {
     }));
   };
 
+  const generateUrlId = (title: string): string => {
+    return title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!campaignId) return;
@@ -109,15 +116,32 @@ const WikiPageCreate = () => {
     setIsSubmitting(true);
 
     try {
+      const urlId = generateUrlId(formData.title);
+
+      // Check for existing page with same urlId
+      const existingPageQuery = query(
+        collection(db, collections.wikiPages),
+        where("campaignId", "==", campaignId),
+        where("urlId", "==", urlId)
+      );
+
+      const existingPage = await getDocs(existingPageQuery);
+      if (!existingPage.empty) {
+        alert("A page with this name already exists in this campaign!");
+        setIsSubmitting(false);
+        return;
+      }
+
       const docRef = await addDoc(collection(db, collections.wikiPages), {
         ...formData,
+        urlId,
         campaignId,
         creatorId: user?.sub,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
 
-      navigate(`/campaigns/${campaignId}/wiki/${docRef.id}`);
+      navigate(`/campaigns/${campaignId}/wiki/${urlId}`);
     } catch (error) {
       console.error("Error creating wiki page:", error);
       setIsSubmitting(false);

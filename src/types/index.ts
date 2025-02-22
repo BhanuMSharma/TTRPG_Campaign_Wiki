@@ -9,15 +9,17 @@ interface User {
   interface Campaign {
     id: string;
     title: string;
+    urlId: string;
     description: string;
     creatorId: string;
     authorizedUsers: string[];  // Array of user IDs who can edit
-    createdAt: Date;
+    createdAt: Timestamp;
     isPublic: boolean;
   }
   
   interface WikiPage {
     id: string;
+    urlId: string;
     campaignId: string;
     title: string;
     body: string;
@@ -34,8 +36,8 @@ interface User {
     body: string;
     type: 'adventureLog';
     sessionDate: Date;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: Timestamp;
+    updatedAt: Timestamp;
   }
   
   type Page = WikiPage | AdventureLogPage;

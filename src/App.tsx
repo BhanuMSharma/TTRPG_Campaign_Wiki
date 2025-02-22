@@ -70,7 +70,7 @@ function AppContent() {
                 <Routes>
                   <Route path="/" element={<CampaignHome />} />
                   <Route path="wiki/create" element={<WikiPageCreate />} />
-                  <Route path="wiki/:pageId" element={<WikiPageView />} />
+                  <Route path="wiki/:urlId" element={<WikiPageView />} />
                   <Route path="wiki" element={<WikiPageList />} />
                   <Route path="logs/create" element={<AdventureLogCreate />} />
                   <Route path="logs/:logId" element={<AdventureLogView />} />

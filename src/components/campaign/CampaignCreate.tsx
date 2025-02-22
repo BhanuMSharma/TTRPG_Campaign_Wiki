@@ -2,8 +2,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import styled from "@emotion/styled";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, updateDoc } from "firebase/firestore";
 import { db, collections } from "../../services/firebase";
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////
 
 // Main form container with card-like appearance
 const FormContainer = styled.div`
@@ -86,6 +90,10 @@ const SubmitButton = styled.button`
   }
 `;
 
+///////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////
+
 const CampaignCreate = () => {
   // Navigation hook for redirecting after creation
   const navigate = useNavigate();
@@ -99,6 +107,16 @@ const CampaignCreate = () => {
     isPublic: false,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Generate a URL-friendly ID based on the title and a unique ID
+  const generateUrlId = (title: string, firebaseId: string) => {
+    const slugTitle = title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+    const idPrefix = firebaseId.slice(0, 3);
+    return `${slugTitle}-${idPrefix}`;
+  };
 
   // Handle input changes
   const handleChange = (
@@ -127,13 +145,21 @@ const CampaignCreate = () => {
         updatedAt: new Date(),
       });
 
+      // Then update it with the urlId
+      const urlId = generateUrlId(formData.title, docRef.id);
+      await updateDoc(docRef, { urlId });
+
       // Redirect to the new campaign page
-      navigate(`/campaigns/${docRef.id}`);
+      navigate(`/campaigns/${urlId}`);
     } catch (error) {
       console.error("Error creating campaign:", error);
       setIsSubmitting(false);
     }
   };
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////
 
   return (
     <FormContainer>

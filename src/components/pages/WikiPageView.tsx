@@ -2,7 +2,16 @@ import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import styled from "@emotion/styled";
-import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  deleteDoc,
+  query,
+  collection,
+  where,
+  getDocs,
+} from "firebase/firestore";
 import { db, collections } from "../../services/firebase";
 import { WikiPage, Campaign } from "../../types";
 
@@ -139,7 +148,8 @@ const MetadataLabel = styled.span`
 ///////////////////////////////////////////////////////////////////////////////////
 
 const WikiPageView = () => {
-  const { campaignId, pageId } = useParams();
+  const { campaignId, urlId } = useParams();
+  console.log("URL Parameters:", { campaignId, urlId });
   const { user } = useAuth0();
   const navigate = useNavigate();
 
@@ -157,11 +167,23 @@ const WikiPageView = () => {
   // Fetch page data and check permissions
   useEffect(() => {
     const fetchData = async () => {
-      if (!campaignId || !pageId) return;
+      if (!campaignId || !urlId) return;
 
-      // Fetch page data
-      const pageDoc = await getDoc(doc(db, collections.wikiPages, pageId));
-      if (pageDoc.exists()) {
+      console.log("Constructing query with:", {
+        campaignTitle: campaign?.title,
+        campaignId,
+        urlId,
+      });
+      // Fetch page data by urlId
+      const pageQuery = query(
+        collection(db, collections.wikiPages),
+        where("campaignId", "==", campaignId),
+        where("urlId", "==", urlId)
+      );
+
+      const pageSnapshot = await getDocs(pageQuery);
+      if (!pageSnapshot.empty) {
+        const pageDoc = pageSnapshot.docs[0];
         const pageData = { id: pageDoc.id, ...pageDoc.data() } as WikiPage;
         console.log("Page data:", pageData);
         setPage(pageData);
@@ -171,6 +193,11 @@ const WikiPageView = () => {
           showInSidebar: pageData.showInSidebar || false,
         });
       }
+
+      console.log(
+        "Page Snapshot:",
+        pageSnapshot.docs.map((doc) => doc.data())
+      );
 
       // Fetch campaign data for permission check
       const campaignDoc = await getDoc(
@@ -192,7 +219,7 @@ const WikiPageView = () => {
     };
 
     fetchData();
-  }, [campaignId, pageId, user]);
+  }, [campaignId, urlId, user]);
 
   // Handle form input changes
   const handleChange = (
@@ -209,10 +236,10 @@ const WikiPageView = () => {
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!pageId) return;
+    if (!urlId) return;
 
     try {
-      await updateDoc(doc(db, collections.wikiPages, pageId), {
+      await updateDoc(doc(db, collections.wikiPages, urlId), {
         ...formData,
         updatedAt: new Date(),
       });
@@ -227,14 +254,11 @@ const WikiPageView = () => {
 
   // Add delete handler
   const handleDelete = async () => {
-    if (
-      !pageId ||
-      !window.confirm("Are you sure you want to delete this page?")
-    )
+    if (!urlId || !window.confirm("Are you sure you want to delete this page?"))
       return;
 
     try {
-      await deleteDoc(doc(db, collections.wikiPages, pageId));
+      await deleteDoc(doc(db, collections.wikiPages, urlId));
       navigate(`/campaigns/${campaignId}/wiki`);
     } catch (error) {
       console.error("Error deleting page:", error);
@@ -302,7 +326,7 @@ const WikiPageView = () => {
           <MetadataSection>
             <MetadataItem>
               <MetadataLabel>Created:</MetadataLabel>
-              {page.updatedAt.toDate().toLocaleDateString()}
+              {page.createdAt.toDate().toLocaleDateString()}
             </MetadataItem>
             <MetadataItem>
               <MetadataLabel>Last Modified:</MetadataLabel>

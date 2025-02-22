@@ -44,23 +44,6 @@ const CreateButton = styled(Link)`
   }
 `;
 
-// Log entry card styling
-const LogCard = styled(Link)`
-  display: block;
-  background-color: #2c3e50;
-  padding: 1.5rem;
-  margin-bottom: 1rem;
-  border-radius: 8px;
-  color: white;
-  text-decoration: none;
-  transition: transform 0.2s;
-
-  &:hover {
-    transform: translateX(10px);
-    background-color: #34495e;
-  }
-`;
-
 const LogCardContainer = styled.div`
   background-color: #2c3e50;
   padding: 1.5rem;

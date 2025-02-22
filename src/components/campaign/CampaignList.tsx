@@ -6,6 +6,10 @@ import { collection, getDocs, query, where, or } from "firebase/firestore";
 import { db, collections } from "../../services/firebase";
 import { Campaign } from "../../types";
 
+///////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////
+
 // Main container for the campaign list page
 const PageContainer = styled.div`
   padding: 2rem;
@@ -57,14 +61,9 @@ const CreateButton = styled(Link)`
   }
 `;
 
-// Date formatting helper function
-const formatDate = (date: Date) => {
-  return new Date(date).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-};
+///////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////
 
 const CampaignList = () => {
   // Separate states for public and private campaigns
@@ -109,6 +108,10 @@ const CampaignList = () => {
     fetchCampaigns();
   }, [isAuthenticated, user]);
 
+  ///////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////
+
   return (
     <PageContainer>
       <HeaderSection>
@@ -126,10 +129,15 @@ const CampaignList = () => {
           <h2>Your Private Campaigns</h2>
           <CampaignGrid>
             {privateCampaigns.map((campaign) => (
-              <CampaignCard key={campaign.id} to={`/campaigns/${campaign.id}`}>
+              <CampaignCard
+                key={campaign.id}
+                to={`/campaigns/${campaign.urlId}`}
+              >
                 <h2>{campaign.title}</h2>
                 <p>{campaign.description}</p>
-                <small>Created: {formatDate(campaign.createdAt)}</small>
+                <small>
+                  Created: {campaign.createdAt.toDate().toLocaleDateString()}
+                </small>
               </CampaignCard>
             ))}
           </CampaignGrid>
@@ -143,7 +151,9 @@ const CampaignList = () => {
           <CampaignCard key={campaign.id} to={`/campaigns/${campaign.id}`}>
             <h2>{campaign.title}</h2>
             <p>{campaign.description}</p>
-            <small>Created: {formatDate(campaign.createdAt)}</small>
+            <small>
+              Created: {campaign.createdAt.toDate().toLocaleDateString()}
+            </small>
           </CampaignCard>
         ))}
       </CampaignGrid>

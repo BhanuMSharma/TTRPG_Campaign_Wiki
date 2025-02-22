@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import styled from "@emotion/styled";
 import {
@@ -10,9 +10,15 @@ import {
   where,
   limit,
   getDocs,
+  deleteDoc,
 } from "firebase/firestore";
 import { db, collections } from "../../services/firebase";
 import { Campaign, WikiPage, AdventureLogPage } from "../../types";
+import { isCreator } from "../../utils/permission.ts";
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////
 
 // Main container for the campaign home page
 const HomeContainer = styled.div`
@@ -91,7 +97,27 @@ const ContentLink = styled(Link)`
   }
 `;
 
+const DeleteButton = styled.button`
+  background-color: #e74c3c;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 2rem;
+
+  &:hover {
+    background-color: #c0392b;
+  }
+`;
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////
+
 const CampaignHome = () => {
+  const navigate = useNavigate();
+
   const { campaignId } = useParams();
   const { user } = useAuth0();
   const [campaign, setCampaign] = useState<Campaign | null>(null);
@@ -108,50 +134,62 @@ const CampaignHome = () => {
       if (!campaignId) return;
 
       try {
-        // Fetch campaign details
-        const campaignDoc = await getDoc(
-          doc(db, collections.campaigns, campaignId)
+        // Query campaigns collection for matching urlId
+        const campaignsQuery = query(
+          collection(db, collections.campaigns),
+          where("urlId", "==", campaignId)
         );
-        if (campaignDoc.exists()) {
-          setCampaign({
+
+        // Get the campaign document
+        const campaignSnapshot = await getDocs(campaignsQuery);
+
+        if (!campaignSnapshot.empty) {
+          const campaignDoc = campaignSnapshot.docs[0];
+          const campaignData = {
             id: campaignDoc.id,
             ...campaignDoc.data(),
-          } as Campaign);
+          } as Campaign;
+          setCampaign(campaignData);
+
+          // Fetch recent wiki pages
+          const wikiQuery = query(
+            collection(db, collections.wikiPages),
+            where("campaignId", "==", campaignId),
+            limit(5)
+          );
+          console.log("Wiki query parameters:", {
+            collection: collections.wikiPages,
+            campaignId: campaignData.id,
+          });
+          const wikiDocs = await getDocs(wikiQuery);
+          setRecentWikiPages(
+            wikiDocs.docs.map((doc) => ({
+              id: doc.id,
+              ...doc.data(),
+            })) as WikiPage[]
+          );
+          console.log("Recent Wiki Pages:", recentWikiPages);
+
+          // Fetch recent adventure logs
+          const logsQuery = query(
+            collection(db, collections.adventureLogs),
+            where("campaignId", "==", campaignData.id),
+            limit(5)
+          );
+          const logDocs = await getDocs(logsQuery);
+          setRecentLogs(
+            logDocs.docs.map((doc) => ({
+              id: doc.id,
+              ...doc.data(),
+            })) as AdventureLogPage[]
+          );
+
+          // Update statistics
+          setStats({
+            wikiCount: wikiDocs.size,
+            logCount: logDocs.size,
+          });
         }
-
-        // Fetch recent wiki pages
-        const wikiQuery = query(
-          collection(db, collections.wikiPages),
-          where("campaignId", "==", campaignId),
-          limit(5)
-        );
-        const wikiDocs = await getDocs(wikiQuery);
-        setRecentWikiPages(
-          wikiDocs.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          })) as WikiPage[]
-        );
-
-        // Fetch recent adventure logs
-        const logsQuery = query(
-          collection(db, collections.adventureLogs),
-          where("campaignId", "==", campaignId),
-          limit(5)
-        );
-        const logDocs = await getDocs(logsQuery);
-        setRecentLogs(
-          logDocs.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          })) as AdventureLogPage[]
-        );
-
-        // Update statistics
-        setStats({
-          wikiCount: wikiDocs.size,
-          logCount: logDocs.size,
-        });
       } catch (error) {
         console.error("Error fetching campaign data:", error);
       }
@@ -159,6 +197,25 @@ const CampaignHome = () => {
 
     fetchCampaignData();
   }, [campaignId]);
+
+  const handleDelete = async () => {
+    if (
+      !campaign ||
+      !window.confirm("Are you sure you want to delete this campaign?")
+    )
+      return;
+
+    try {
+      await deleteDoc(doc(db, collections.campaigns, campaign.id));
+      navigate("/campaigns");
+    } catch (error) {
+      console.error("Error deleting campaign:", error);
+    }
+  };
+
+  ///////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////////////////////////
 
   return (
     <HomeContainer>
@@ -193,7 +250,7 @@ const CampaignHome = () => {
           {recentWikiPages.map((page) => (
             <ContentLink
               key={page.id}
-              to={`/campaigns/${campaignId}/wiki/${page.id}`}
+              to={`/campaigns/${campaignId}/wiki/${page.urlId}`}
             >
               {page.title}
             </ContentLink>
@@ -212,6 +269,9 @@ const CampaignHome = () => {
           ))}
         </ContentSection>
       </ContentGrid>
+      {campaign && isCreator(campaign, user?.sub) && (
+        <DeleteButton onClick={handleDelete}>Delete Campaign</DeleteButton>
+      )}
     </HomeContainer>
   );
 };

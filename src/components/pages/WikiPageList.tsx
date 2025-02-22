@@ -41,22 +41,6 @@ const CreateButton = styled(Link)`
   }
 `;
 
-const WikiCard = styled(Link)`
-  display: block;
-  background-color: #2c3e50;
-  padding: 1.5rem;
-  margin-bottom: 1rem;
-  border-radius: 8px;
-  color: white;
-  text-decoration: none;
-  transition: transform 0.2s;
-
-  &:hover {
-    transform: translateX(10px);
-    background-color: #34495e;
-  }
-`;
-
 const WikiCardContainer = styled.div`
   background-color: #2c3e50;
   padding: 1.5rem;
@@ -167,18 +151,26 @@ const WikiPageList = () => {
           where("campaignId", "==", campaignId),
           orderBy("updatedAt", "desc")
         );
+        console.log("Pages Query:", pagesQuery);
 
         const pagesSnapshot = await getDocs(pagesQuery);
-        console.log(
-          "Wiki pages data:",
-          pagesSnapshot.docs.map((doc) => doc.data())
-        );
-        const pagesData = pagesSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as WikiPage[];
+        console.log("Raw Pages Snapshot:", pagesSnapshot.docs);
+        const pagesData = pagesSnapshot.docs.map((doc) => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            urlId: data.urlId, // explicitly include urlId
+            title: data.title,
+            body: data.body,
+            campaignId: data.campaignId,
+            createdAt: data.createdAt,
+            updatedAt: data.updatedAt,
+            showInSidebar: data.showInSidebar,
+          } as WikiPage;
+        });
 
         setPages(pagesData);
+        console.log("Mapped Pages Data:", pagesData);
       } catch (error) {
         console.error("Error fetching wiki pages:", error);
       }
@@ -217,32 +209,38 @@ const WikiPageList = () => {
         )}
       </HeaderSection>
 
-      {pages.map((page) => (
-        <WikiCardContainer key={page.id}>
-          <WikiCardContent to={`/campaigns/${campaignId}/wiki/${page.id}`}>
-            <h2>{page.title}</h2>
-            <LastUpdated>
-              Last Updated: {new Date(page.updatedAt).toLocaleDateString()}
-            </LastUpdated>
-            <p>{page.body.substring(0, 150)}...</p>
-          </WikiCardContent>
+      {pages.map((page) => {
+        console.log("Rendering page:", {
+          title: page.title,
+          urlId: page.urlId,
+        });
+        return (
+          <WikiCardContainer key={page.id}>
+            <WikiCardContent to={`/campaigns/${campaignId}/wiki/${page.urlId}`}>
+              <h2>{page.title}</h2>
+              <LastUpdated>
+                Last Updated: {page.updatedAt.toDate().toLocaleDateString()}
+              </LastUpdated>
+              <p>{page.body.substring(0, 150)}...</p>
+            </WikiCardContent>
 
-          {hasEditAccess && (
-            <ActionButtons>
-              <Button
-                onClick={() =>
-                  navigate(`/campaigns/${campaignId}/wiki/${page.id}`)
-                }
-              >
-                Edit
-              </Button>
-              <DeleteButton onClick={() => handleDelete(page.id)}>
-                Delete
-              </DeleteButton>
-            </ActionButtons>
-          )}
-        </WikiCardContainer>
-      ))}
+            {hasEditAccess && (
+              <ActionButtons>
+                <Button
+                  onClick={() =>
+                    navigate(`/campaigns/${campaignId}/wiki/${page.urlId}`)
+                  }
+                >
+                  Edit
+                </Button>
+                <DeleteButton onClick={() => handleDelete(page.id)}>
+                  Delete
+                </DeleteButton>
+              </ActionButtons>
+            )}
+          </WikiCardContainer>
+        );
+      })}
 
       {pages.length === 0 && (
         <p>No wiki pages yet. {hasEditAccess && "Create your first page!"}</p>
