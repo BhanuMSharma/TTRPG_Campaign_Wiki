@@ -1,0 +1,37 @@
+GENERAL
+* you should be able to upload photos for wiki pages
+* make it so that the campaign ids are shorter (they should be equal to campaign name + 5 characters (#s and letters))
+* Enhance the content display in both Wiki Pages and Adventure Logs - 
+* Add better navigation between pages
+* sidebar campaign home button remove, and just make that title the button
+
+CAMPAIGN LIST
+* or is declared but not used
+* delete button on private campaign page - but only for if created by user
+
+CAMPAIGN HOME
+* campaign home page should have another card above wiki pages card and adventure logs card (these should be way smaller, btw) that is Most Recent Adventure Log
+* user const is declared but not used
+
+WIKI PAGE LIST
+* There should be a sort and filter option
+
+ADVENTURE LOGS
+* adventure logs page should always be in correct order
+* adventure logs dates are not updating or saving
+** also when selecting the date, by default it should be on current date (not 01/01/2000)
+
+
+* VISUAL FIXES
+** Improve the visual design and styling of the entire application
+** you can also upload a photo for the campaigns (this is displayed as background to campaign cards in campaignList and as banner photo at top of campaignHome)
+** wiki pages list - the cards should be smaller
+** campaign home font and colors
+
+
+CHANGES DONE:
+v2
+wikipageview created date fixed
+campaignlist card dates fixed and formatDate function removed
+adventureloglist log card styling const removed
+wikipagelist wiki card styling const removed
