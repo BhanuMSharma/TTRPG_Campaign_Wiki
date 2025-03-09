@@ -4,17 +4,17 @@ import { useAuth0 } from "@auth0/auth0-react";
 import styled from "@emotion/styled";
 import {
   doc,
-  getDoc,
   collection,
   query,
   where,
   limit,
   getDocs,
   deleteDoc,
-} from "firebase/firestore";
+} from "firebase/firestore"; // getDoc,
 import { db, collections } from "../../services/firebase";
 import { Campaign, WikiPage, AdventureLogPage } from "../../types";
 import { isCreator } from "../../utils/permission.ts";
+import { getTheme } from "../../theme/index.ts";
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -31,6 +31,18 @@ const CampaignHeader = styled.div`
   padding: 2rem;
   border-radius: 8px;
   margin-bottom: 2rem;
+`;
+
+// game system badge
+const GameSystemBadge = styled.div`
+  display: inline-block;
+  background-color: ${getTheme("colors.primary")};
+  color: ${getTheme("colors.text.primary")};
+  padding: ${getTheme("spacing.sm")} ${getTheme("spacing.md")};
+  border-radius: ${getTheme("borderRadius.sm")};
+  font-size: ${getTheme("fonts.size.base")};
+  font-weight: ${getTheme("fonts.weight.medium")};
+  margin-top: ${getTheme("spacing.md")};
 `;
 
 // Grid layout for statistics cards
@@ -173,7 +185,7 @@ const CampaignHome = () => {
           // Fetch recent adventure logs
           const logsQuery = query(
             collection(db, collections.adventureLogs),
-            where("campaignId", "==", campaignData.id),
+            where("campaignId", "==", campaignId),
             limit(5)
           );
           const logDocs = await getDocs(logsQuery);
@@ -221,6 +233,9 @@ const CampaignHome = () => {
     <HomeContainer>
       <CampaignHeader>
         <h1>{campaign?.title}</h1>
+        {campaign?.gameSystem && (
+          <GameSystemBadge>{campaign.gameSystem}</GameSystemBadge>
+        )}
         <p>{campaign?.description}</p>
       </CampaignHeader>
 
@@ -262,7 +277,7 @@ const CampaignHome = () => {
           {recentLogs.map((log) => (
             <ContentLink
               key={log.id}
-              to={`/campaigns/${campaignId}/logs/${log.id}`}
+              to={`/campaigns/${campaignId}/logs/${log.urlId}`}
             >
               {log.title}
             </ContentLink>

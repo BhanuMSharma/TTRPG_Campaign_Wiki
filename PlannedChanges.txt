@@ -1,6 +1,5 @@
 GENERAL
 * you should be able to upload photos for wiki pages
-* make it so that the campaign ids are shorter (they should be equal to campaign name + 5 characters (#s and letters))
 * Enhance the content display in both Wiki Pages and Adventure Logs - 
 * Add better navigation between pages
 * sidebar campaign home button remove, and just make that title the button
@@ -35,3 +34,17 @@ wikipageview created date fixed
 campaignlist card dates fixed and formatDate function removed
 adventureloglist log card styling const removed
 wikipagelist wiki card styling const removed
+campaignUrls, wiki page URLs are now easier to read
+
+v3
+adventurelog url changed (index.ts, AdvenutreLogCreate.tsx, AdventureLogList.tsx, AdventureLogView.tsx, CampaignHome.tsx)
+
+v4
+added global.css, and theme folder (global.css, /theme/index.ts)
+logo changed and site title changed on browser tab (index.html)
+sidebar is collapsible on mobile devices or windows smaller than ac ertain size (width: 768px) (sidebar.tsx and app.tsx)
+campaign home button in sidebar removed and the title of the campaign is now the home button (sidebar.tsx)
+navbar title changed from d&d campaign wiki to ttrpg campaign wiki (Navbar.tsx)
+added campaign type badge to campaigns (campaigncreate.tsx, campaignhome.tsx, campaignlist.tsx, types/index.ts)
+fixed issue where sidebar wasnt showing campaign name by calling campaign info differently (sidebar.tsx)
+campaign list page changed from d&d campaigns to TTRPG campaigns (campaignlist.tsx)

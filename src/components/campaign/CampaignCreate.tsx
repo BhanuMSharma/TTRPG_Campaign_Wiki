@@ -90,6 +90,23 @@ const SubmitButton = styled.button`
   }
 `;
 
+// Add a styled select component
+const Select = styled.select`
+  width: 100%;
+  padding: 0.75rem;
+  margin: 0.5rem 0 1rem;
+  border-radius: 4px;
+  border: 1px solid #34495e;
+  background-color: #34495e;
+  color: white;
+  font-size: 1rem;
+
+  &:focus {
+    outline: none;
+    border-color: #3498db;
+  }
+`;
+
 ///////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -105,6 +122,7 @@ const CampaignCreate = () => {
     title: "",
     description: "",
     isPublic: false,
+    gameSystem: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -120,7 +138,9 @@ const CampaignCreate = () => {
 
   // Handle input changes
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value, type } = e.target;
     setFormData((prev) => ({
@@ -176,6 +196,26 @@ const CampaignCreate = () => {
             required
             placeholder="Enter campaign title"
           />
+        </FormField>
+
+        <FormField>
+          <label htmlFor="gameSystem">Game System</label>
+          <Select
+            id="gameSystem"
+            name="gameSystem"
+            value={formData.gameSystem}
+            onChange={handleChange}
+            required
+          >
+            <option value="">Select a game system</option>
+            <option value="D&D 5.5E">Dungeons & Dragons 5.5E</option>
+            <option value="Stardrive">Stardrive</option>
+            <option value="Pathfinder 2E">Pathfinder 2E</option>
+            <option value="Call of Cthulhu">Call of Cthulhu</option>
+            <option value="Starfinder">Starfinder</option>
+            <option value="Cyberpunk">Cyberpunk</option>
+            <option value="Other">Other</option>
+          </Select>
         </FormField>
 
         <FormField>

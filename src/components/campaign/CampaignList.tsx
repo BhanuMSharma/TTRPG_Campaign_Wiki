@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { Link } from "react-router-dom";
 import styled from "@emotion/styled";
-import { collection, getDocs, query, where, or } from "firebase/firestore";
+import { getTheme } from "../../theme/index.ts";
+import { collection, getDocs, query, where } from "firebase/firestore"; //, or } from "firebase/firestore";
 import { db, collections } from "../../services/firebase";
 import { Campaign } from "../../types";
 
@@ -45,6 +46,18 @@ const CampaignCard = styled(Link)`
     transform: translateY(-5px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
+`;
+
+// Update the CampaignCard to include a game system badge
+const GameSystemBadge = styled.span`
+  display: inline-block;
+  background-color: ${getTheme("colors.primary")};
+  color: ${getTheme("colors.text.primary")};
+  padding: ${getTheme("spacing.sm")} ${getTheme("spacing.md")};
+  border-radius: ${getTheme("borderRadius.sm")};
+  font-size: ${getTheme("fonts.size.base")};
+  font-weight: ${getTheme("fonts.weight.medium")};
+  margin-top: ${getTheme("spacing.md")};
 `;
 
 // Create campaign button styling
@@ -115,7 +128,7 @@ const CampaignList = () => {
   return (
     <PageContainer>
       <HeaderSection>
-        <h1>D&D Campaigns</h1>
+        <h1>TTRPG Campaigns</h1>
         {isAuthenticated && (
           <CreateButton to="/campaigns/create">
             Create New Campaign
@@ -134,6 +147,9 @@ const CampaignList = () => {
                 to={`/campaigns/${campaign.urlId}`}
               >
                 <h2>{campaign.title}</h2>
+                {campaign.gameSystem && (
+                  <GameSystemBadge>{campaign.gameSystem}</GameSystemBadge>
+                )}
                 <p>{campaign.description}</p>
                 <small>
                   Created: {campaign.createdAt.toDate().toLocaleDateString()}
@@ -150,6 +166,9 @@ const CampaignList = () => {
         {publicCampaigns.map((campaign) => (
           <CampaignCard key={campaign.id} to={`/campaigns/${campaign.id}`}>
             <h2>{campaign.title}</h2>
+            {campaign.gameSystem && (
+              <GameSystemBadge>{campaign.gameSystem}</GameSystemBadge>
+            )}
             <p>{campaign.description}</p>
             <small>
               Created: {campaign.createdAt.toDate().toLocaleDateString()}

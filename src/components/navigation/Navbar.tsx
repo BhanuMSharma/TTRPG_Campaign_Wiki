@@ -60,7 +60,7 @@ const Navbar = () => {
     <NavContainer>
       <NavContent>
         {/* Brand links to home page */}
-        <NavBrand to="/">D&D Campaign Wiki</NavBrand>
+        <NavBrand to="/">TTRPG Campaign Wiki</NavBrand>
         <NavLinks>
           {/* Navigation link to campaigns list */}
           <NavLink to="/campaigns">Campaigns</NavLink>

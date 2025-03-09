@@ -15,6 +15,7 @@ interface User {
     authorizedUsers: string[];  // Array of user IDs who can edit
     createdAt: Timestamp;
     isPublic: boolean;
+    gameSystem: string;
   }
   
   interface WikiPage {
@@ -31,6 +32,7 @@ interface User {
   
   interface AdventureLogPage {
     id: string;
+    urlId: string
     campaignId: string;
     title: string;
     body: string;

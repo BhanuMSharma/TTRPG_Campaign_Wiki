@@ -13,7 +13,7 @@ import {
 } from "firebase/firestore";
 
 // Main sidebar container - fixed to the left side
-const SidebarContainer = styled.div`
+const SidebarContainer = styled.div<{ isVisible?: boolean }>`
   width: 250px;
   height: 100vh;
   position: fixed;
@@ -23,6 +23,12 @@ const SidebarContainer = styled.div`
   color: white;
   padding: 1rem;
   overflow-y: auto;
+  transition: transform 0.3s ease;
+  
+  @media (max-width: 768px) {
+    transform: ${(props) =>
+      props.isVisible ? "translateX(0)" : "translateX(-100%)"};
+    z-index: 999;
 `;
 
 // Section headers in the sidebar
@@ -54,7 +60,7 @@ const PageLink = styled(Link)`
   }
 `;
 
-const Sidebar = () => {
+const Sidebar = ({ isVisible = true }) => {
   // Get campaignId from URL parameters
   const { campaignId } = useParams();
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -69,16 +75,39 @@ const Sidebar = () => {
     const fetchCampaignData = async () => {
       if (!campaignId) return;
 
+      ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      // TRY THIS
+      // Instead of using getDoc directly, first query for the campaign with matching urlId
+      const campaignsQuery = query(
+        collection(db, collections.campaigns),
+        where("urlId", "==", campaignId)
+      );
+
+      const campaignSnapshot = await getDocs(campaignsQuery);
+
+      if (!campaignSnapshot.empty) {
+        const campaignDoc = campaignSnapshot.docs[0];
+        const campaignData = {
+          id: campaignDoc.id,
+          ...campaignDoc.data(),
+        } as Campaign;
+        setCampaign(campaignData);
+      }
+
+      ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // Fetch campaign details using document reference
-      const campaignDoc = await getDoc(
+      /*const campaignDoc = await getDoc(
         doc(db, collections.campaigns, campaignId)
       );
-      ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      console.log("campaignDoc.exists():", campaignDoc.exists());
-      console.log("campaignDoc:", campaignDoc.data());
+      console.log("campaignDoc.exists():", campaignDoc.exists()); // THIS RETURNS FALSE
+      console.log("campaignDoc:", campaignDoc.data()); 
       if (campaignDoc.exists()) {
-        setCampaign({ id: campaignDoc.id, ...campaignDoc.data() } as Campaign);
-      }
+        setCampaign({
+          id: campaignDoc.id,
+          ...campaignDoc.data(),
+        } as Campaign);
+      } */
+      ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
       // Fetch wiki pages marked for sidebar
       const wikiRef = collection(db, collections.wikiPages);
@@ -107,13 +136,15 @@ const Sidebar = () => {
   }, [campaignId]);
 
   return (
-    <SidebarContainer>
-      <h2>{campaign?.title || "Loading..."}</h2>
+    <SidebarContainer isVisible={isVisible}>
+      <PageLink to={`/campaigns/${campaignId}`}>
+        <h2>{campaign?.title || "Loading..."}</h2>
+      </PageLink>
 
       {/* Campaign Home Link - New Addition */}
       <SectionHeader>Navigation</SectionHeader>
       <PageList>
-        <PageLink to={`/campaigns/${campaignId}`}>Campaign Home</PageLink>
+        {/*<PageLink to={`/campaigns/${campaignId}`}>Campaign Home</PageLink>*/}
         <PageLink to={`/campaigns/${campaignId}/logs`}>Adventure Logs</PageLink>
         <PageLink to={`/campaigns/${campaignId}/wiki`}>All Wiki Pages</PageLink>
       </PageList>
