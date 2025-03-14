@@ -1,0 +1,5 @@
+AWS S3 (storage bucket for build and necessary files)
+AWS Cloudfront (deployment and hosting for online)
+Google Firebase Firestore Database (for storing database entries and all data related to site)
+Auth0 (used for authentication of users)
+Porkbun (used for domain name)
