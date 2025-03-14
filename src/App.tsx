@@ -103,38 +103,43 @@ function AppContent() {
   };
 
   return (
-    <AppContainer>
-      <Navbar />
-      {showSidebar && isMobile && (
-        <SidebarToggle onClick={toggleSidebar}>
-          {isSidebarVisible ? "✕" : "☰"}
-        </SidebarToggle>
-      )}
-      <Routes>
-        <Route path="/" element={<CampaignList />} />
-        <Route path="/campaigns" element={<CampaignList />} />
-        <Route path="/campaigns/create" element={<CampaignCreate />} />
-        <Route
-          path="/campaigns/:campaignId/*"
-          element={
-            <Layout>
-              {showSidebar && <Sidebar isVisible={isSidebarVisible} />}
-              <MainContent hasSidebar={showSidebar && !isMobile}>
-                <Routes>
-                  <Route path="/" element={<CampaignHome />} />
-                  <Route path="wiki/create" element={<WikiPageCreate />} />
-                  <Route path="wiki/:urlId" element={<WikiPageView />} />
-                  <Route path="wiki" element={<WikiPageList />} />
-                  <Route path="logs/create" element={<AdventureLogCreate />} />
-                  <Route path="logs/:logId" element={<AdventureLogView />} />
-                  <Route path="logs" element={<AdventureLogList />} />
-                </Routes>
-              </MainContent>
-            </Layout>
-          }
-        />
-      </Routes>
-    </AppContainer>
+    <ThemeProvider theme={theme}>
+      <AppContainer>
+        <Navbar />
+        {showSidebar && isMobile && (
+          <SidebarToggle onClick={toggleSidebar}>
+            {isSidebarVisible ? "✕" : "☰"}
+          </SidebarToggle>
+        )}
+        <Routes>
+          <Route path="/" element={<CampaignList />} />
+          <Route path="/campaigns" element={<CampaignList />} />
+          <Route path="/campaigns/create" element={<CampaignCreate />} />
+          <Route
+            path="/campaigns/:campaignId/*"
+            element={
+              <Layout>
+                {showSidebar && <Sidebar isVisible={isSidebarVisible} />}
+                <MainContent hasSidebar={showSidebar && !isMobile}>
+                  <Routes>
+                    <Route path="/" element={<CampaignHome />} />
+                    <Route path="wiki/create" element={<WikiPageCreate />} />
+                    <Route path="wiki/:urlId" element={<WikiPageView />} />
+                    <Route path="wiki" element={<WikiPageList />} />
+                    <Route
+                      path="logs/create"
+                      element={<AdventureLogCreate />}
+                    />
+                    <Route path="logs/:logId" element={<AdventureLogView />} />
+                    <Route path="logs" element={<AdventureLogList />} />
+                  </Routes>
+                </MainContent>
+              </Layout>
+            }
+          />
+        </Routes>
+      </AppContainer>
+    </ThemeProvider>
   );
 }
 

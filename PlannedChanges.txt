@@ -48,3 +48,6 @@ navbar title changed from d&d campaign wiki to ttrpg campaign wiki (Navbar.tsx)
 added campaign type badge to campaigns (campaigncreate.tsx, campaignhome.tsx, campaignlist.tsx, types/index.ts)
 fixed issue where sidebar wasnt showing campaign name by calling campaign info differently (sidebar.tsx)
 campaign list page changed from d&d campaigns to TTRPG campaigns (campaignlist.tsx)
+
+v5
+bug fixes related to previous update, specifically theme (app.tsx, sidebar.tsx, theme/index.ts)

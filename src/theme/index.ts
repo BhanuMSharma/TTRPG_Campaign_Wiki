@@ -104,7 +104,12 @@ export const theme = {
   export type Theme = typeof theme;
   
   // Helper function to access theme properties in styled components
-  export const getTheme = (path: string, fallback?: string) => (props: { theme: Theme }) => {
+  export const getTheme = (path: string, fallback?: string) => (props: { theme?: Theme }) => {
+    if (!props.theme) {
+        console.warn('Theme not available when accessing theme ${path}.');
+        return fallback || undefined;
+    }
+    
     const pathParts = path.split('.');
     let result: any = props.theme;
     

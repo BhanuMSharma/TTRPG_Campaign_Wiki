@@ -3,14 +3,7 @@ import styled from "@emotion/styled";
 import { useEffect, useState } from "react";
 import { Campaign, WikiPage } from "../../types";
 import { db, collections } from "../../services/firebase";
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  doc,
-  getDoc,
-} from "firebase/firestore";
+import { collection, query, where, getDocs } from "firebase/firestore";
 
 // Main sidebar container - fixed to the left side
 const SidebarContainer = styled.div<{ isVisible?: boolean }>`
