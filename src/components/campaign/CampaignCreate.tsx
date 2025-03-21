@@ -121,7 +121,7 @@ const CampaignCreate = () => {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    isPublic: false,
+    //isPublic: false,
     gameSystem: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -230,7 +230,7 @@ const CampaignCreate = () => {
           />
         </FormField>
 
-        <CheckboxContainer>
+        {/*<CheckboxContainer>
           <Input
             type="checkbox"
             id="isPublic"
@@ -239,7 +239,7 @@ const CampaignCreate = () => {
             onChange={handleChange}
           />
           <label htmlFor="isPublic">Make this campaign public</label>
-        </CheckboxContainer>
+        </CheckboxContainer>*/}
 
         <SubmitButton type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Creating..." : "Create Campaign"}

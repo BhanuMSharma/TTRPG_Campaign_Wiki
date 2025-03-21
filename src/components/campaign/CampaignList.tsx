@@ -80,14 +80,16 @@ const CreateButton = styled(Link)`
 
 const CampaignList = () => {
   // Separate states for public and private campaigns
-  const [publicCampaigns, setPublicCampaigns] = useState<Campaign[]>([]);
-  const [privateCampaigns, setPrivateCampaigns] = useState<Campaign[]>([]);
+  //const [publicCampaigns, setPublicCampaigns] = useState<Campaign[]>([]);
+  //const [privateCampaigns, setPrivateCampaigns] = useState<Campaign[]>([]);
+  const [allCampaigns, setAllCampaigns] = useState<Campaign[]>([]);
+  const [userCampaigns, setUserCampaigns] = useState<Campaign[]>([]);
   const { isAuthenticated, user } = useAuth0();
 
   useEffect(() => {
     const fetchCampaigns = async () => {
       try {
-        // Fetch public campaigns
+        /*// Fetch public campaigns
         const publicQuery = query(
           collection(db, collections.campaigns),
           where("isPublic", "==", true)
@@ -112,6 +114,23 @@ const CampaignList = () => {
             ...doc.data(),
           })) as Campaign[];
           setPrivateCampaigns(privateData);
+        }*/
+        // fetch all campaigns
+        const campaignsRef = collection(db, collections.campaigns);
+        const campaignsSnapshot = await getDocs(campaignsRef);
+        const campaignsData = campaignsSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Campaign[];
+
+        setAllCampaigns(campaignsData);
+
+        // if user is autheticated, identify their campaigns
+        if (isAuthenticated && user?.sub) {
+          const userCampaignData = campaignsData.filter((campaign) =>
+            campaign.authorizedUsers.includes(user.sub)
+          );
+          setUserCampaigns(userCampaignData);
         }
       } catch (error) {
         console.error("Error fetching campaigns:", error);
@@ -136,12 +155,12 @@ const CampaignList = () => {
         )}
       </HeaderSection>
 
-      {/* Private Campaigns Section - Only shown to authenticated users */}
-      {isAuthenticated && (
+      {/* User's Campaigns Section - Only shown to authenticated users */}
+      {isAuthenticated && userCampaigns.length > 0 && (
         <>
-          <h2>Your Private Campaigns</h2>
+          <h2>Your Campaigns</h2>
           <CampaignGrid>
-            {privateCampaigns.map((campaign) => (
+            {userCampaigns.map((campaign) => (
               <CampaignCard
                 key={campaign.id}
                 to={`/campaigns/${campaign.urlId}`}
@@ -160,10 +179,10 @@ const CampaignList = () => {
         </>
       )}
 
-      {/* Public Campaigns Section */}
-      <h2>Public Campaigns</h2>
+      {/* All Campaigns Section */}
+      <h2>All Campaigns</h2>
       <CampaignGrid>
-        {publicCampaigns.map((campaign) => (
+        {allCampaigns.map((campaign) => (
           <CampaignCard key={campaign.id} to={`/campaigns/${campaign.id}`}>
             <h2>{campaign.title}</h2>
             {campaign.gameSystem && (
@@ -178,13 +197,12 @@ const CampaignList = () => {
       </CampaignGrid>
 
       {/* No campaigns message */}
-      {publicCampaigns.length === 0 &&
-        (!isAuthenticated || privateCampaigns.length === 0) && (
-          <p>
-            No campaigns found.{" "}
-            {!isAuthenticated && "Log in to see your private campaigns!"}
-          </p>
-        )}
+      {allCampaigns.length === 0 && (
+        <p>
+          No campaigns found.{" "}
+          {!isAuthenticated && "Log in to see your private campaigns!"}
+        </p>
+      )}
     </PageContainer>
   );
 };

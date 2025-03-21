@@ -51,3 +51,10 @@ campaign list page changed from d&d campaigns to TTRPG campaigns (campaignlist.t
 
 v5
 bug fixes related to previous update, specifically theme (app.tsx, sidebar.tsx, theme/index.ts)
+
+v6
+removed isPublic from the Campaign interface
+updated CampaignList to show all campaigns and separately highlight user's campaigns
+updated Firestore security rules to allow reading all campaigns but restrict editing to authorized users
+no changes needed for CampaignHome
+noted manual cleanup of existing documents

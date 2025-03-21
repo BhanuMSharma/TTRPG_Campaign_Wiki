@@ -14,7 +14,7 @@ interface User {
     creatorId: string;
     authorizedUsers: string[];  // Array of user IDs who can edit
     createdAt: Timestamp;
-    isPublic: boolean;
+    //isPublic: boolean;
     gameSystem: string;
   }
   
