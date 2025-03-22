@@ -3,6 +3,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import styled from "@emotion/styled";
 import LoginButton from "../auth/LoginButton";
 import UserProfile from "../auth/UserProfile";
+import logo from "../../images/logo.png";
 
 // Main navigation container - fixed at the top of the viewport
 const NavContainer = styled.nav`
@@ -11,13 +12,14 @@ const NavContainer = styled.nav`
   left: 0;
   right: 0;
   background-color: #2c3e50;
-  padding: 1rem;
+  padding: 0.25rem;
   color: white;
   z-index: 1000; // Ensures navbar stays above other content
 `;
 
 // Centers content and sets maximum width for larger screens
 const NavContent = styled.div`
+  max-height: 90%;
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
@@ -25,7 +27,14 @@ const NavContent = styled.div`
   align-items: center; // Vertically centers items
 `;
 
-// Website title/logo styling
+// container for website title/logo
+const NavBrandContainer = styled.div`
+  display: flex;
+  gap: 1rem; // Space between logo and title
+  align-items: center; // Vertically centers items
+`;
+
+// Website title styling
 const NavBrand = styled(Link)`
   color: white;
   text-decoration: none;
@@ -34,6 +43,15 @@ const NavBrand = styled(Link)`
   &:hover {
     color: #ecf0f1; // Subtle hover effect
   }
+`;
+
+// logo image styling
+const LogoPicture = styled.img`
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid white;
 `;
 
 // Container for navigation links and auth buttons
@@ -59,11 +77,14 @@ const Navbar = () => {
   return (
     <NavContainer>
       <NavContent>
-        {/* Brand links to home page */}
-        <NavBrand to="/">TTRPG Campaign Wiki</NavBrand>
+        <NavBrandContainer>
+          <NavBrand to="/">
+            <LogoPicture src={logo} alt="Logo" />
+          </NavBrand>
+          {/* Brand links to home page */}
+          <NavBrand to="/">TTRPG Campaign Wiki</NavBrand>
+        </NavBrandContainer>
         <NavLinks>
-          {/* Navigation link to campaigns list */}
-          <NavLink to="/campaigns">Campaigns</NavLink>
           {/* Conditional rendering based on auth status */}
           {isAuthenticated ? <UserProfile /> : <LoginButton />}
         </NavLinks>

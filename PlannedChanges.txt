@@ -58,3 +58,7 @@ updated CampaignList to show all campaigns and separately highlight user's campa
 updated Firestore security rules to allow reading all campaigns but restrict editing to authorized users
 no changes needed for CampaignHome
 noted manual cleanup of existing documents
+
+v7
+edited Navbar (padding, removed Campaigns button, added logo, made logo/title links to home page
+edited userprofile (removed my campaigns section, simplified bar and dropdown, added tooltip popup for profile settings)
