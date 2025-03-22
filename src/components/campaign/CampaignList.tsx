@@ -3,7 +3,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { Link } from "react-router-dom";
 import styled from "@emotion/styled";
 import { getTheme } from "../../theme/index.ts";
-import { collection, getDocs, query, where } from "firebase/firestore"; //, or } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore"; //, query, where } from "firebase/firestore"; //, or } from "firebase/firestore";
 import { db, collections } from "../../services/firebase";
 import { Campaign } from "../../types";
 
@@ -127,8 +127,9 @@ const CampaignList = () => {
 
         // if user is autheticated, identify their campaigns
         if (isAuthenticated && user?.sub) {
+          const userSub = user.sub;
           const userCampaignData = campaignsData.filter((campaign) =>
-            campaign.authorizedUsers.includes(user.sub)
+            campaign.authorizedUsers.includes(userSub)
           );
           setUserCampaigns(userCampaignData);
         }

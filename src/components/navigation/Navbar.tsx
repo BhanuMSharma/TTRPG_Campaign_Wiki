@@ -61,14 +61,14 @@ const NavLinks = styled.div`
   align-items: center;
 `;
 
-// Individual navigation link styling
+/*// Individual navigation link styling
 const NavLink = styled(Link)`
   color: white;
   text-decoration: none;
   &:hover {
     color: #ecf0f1; // Subtle hover effect
   }
-`;
+`; */
 
 const Navbar = () => {
   // Hook from Auth0 to check if user is logged in

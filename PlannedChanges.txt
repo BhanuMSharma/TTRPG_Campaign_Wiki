@@ -62,3 +62,7 @@ noted manual cleanup of existing documents
 v7
 edited Navbar (padding, removed Campaigns button, added logo, made logo/title links to home page
 edited userprofile (removed my campaigns section, simplified bar and dropdown, added tooltip popup for profile settings)
+
+v8 misc build fixes
+commented out consts that weren't being used in Navbar, UserProfile, CampaignCreate
+fixed an issue where typescript wasn't seeing a check in CampaignList 

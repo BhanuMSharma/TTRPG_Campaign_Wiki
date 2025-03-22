@@ -61,13 +61,13 @@ const FormField = styled.div`
   margin-bottom: 1.5rem;
 `;
 
-// Checkbox container for alignment
+/*// Checkbox container for alignment
 const CheckboxContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
   margin: 1rem 0;
-`;
+`; */
 
 // Submit button styling
 const SubmitButton = styled.button`

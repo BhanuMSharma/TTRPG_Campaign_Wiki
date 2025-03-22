@@ -1,6 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import styled from "@emotion/styled";
-import { getTheme } from "../../theme/index.ts";
+//import { getTheme } from "../../theme/index.ts";
 import { useState, useEffect } from "react";
 import headImage from "../../images/T_2_head_gladiator_.png";
 
